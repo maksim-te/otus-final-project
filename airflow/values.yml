@@ -1,0 +1,7 @@
+airflowVersion: "3.1.7"
+
+postgresql:
+  enabled: true
+  image:
+    repository: postgres
+    tag: "16"
