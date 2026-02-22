@@ -5,3 +5,9 @@ postgresql:
   image:
     repository: postgres
     tag: "16"
+
+images:
+  airflow:
+    repository: "cr.yandex/crpeqnl53oh327o27qtu/apache/airflow"
+    tag: "3.1.7-python3.12"
+    pullPolicy: Always

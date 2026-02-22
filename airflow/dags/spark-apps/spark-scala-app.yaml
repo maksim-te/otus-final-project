@@ -1,0 +1,34 @@
+
+---
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: scala-spark-example
+spec:
+  type: Scala
+  mode: cluster
+  image: registry.example.com/spark/my-scala-app:1.0.0
+  imagePullPolicy: IfNotPresent
+  mainClass: com.example.Main
+  mainApplicationFile: local:///opt/spark/app/my-app.jar
+  sparkVersion: "3.5.0"
+  restartPolicy:
+    type: Never
+
+  driver:
+    cores: 1
+    coreLimit: "1200m"
+    memory: "1g"
+    serviceAccount: spark
+    labels:
+      version: 3.5.0
+
+  executor:
+    cores: 2
+    instances: 2
+    memory: "2g"
+    labels:
+      version: 3.5.0
+
+  sparkConf:
+    spark.kubernetes.container.image.pullSecrets: my-registry-secret

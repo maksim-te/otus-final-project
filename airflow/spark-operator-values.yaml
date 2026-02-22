@@ -1,0 +1,6 @@
+spark:
+  # -- List of namespaces where to run spark jobs.
+  jobNamespaces:
+    - spark # actually this is used
+    - airflow
+    - default
