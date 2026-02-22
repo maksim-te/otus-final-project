@@ -1,3 +1,16 @@
+# Создание ключа для Git Sync Airflow
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "airflow@otus.com" -f ./airflow_gitsync_id_rsa
+
+kubectl create secret generic airflow-ssh-secret \
+  --from-file=gitSshKey=./airflow_gitsync_id_rsa \
+  --namespace airflow \
+  --dry-run=client -o yaml > airflow-ssh-secret.yaml
+  
+kubectl apply -f airflow-ssh-secret.yaml
+```
+
 # Установка Airflow
 
 ```bash
@@ -10,17 +23,6 @@ helm delete airflow --namespace airflow
 
 Values here: https://github.com/apache/airflow/blob/main/chart/values.yaml 
 
-
-```bash
-ssh-keygen -t rsa -b 4096 -C "airflow@otus.com" -f ./airflow_gitsync_id_rsa
-
-kubectl create secret generic airflow-git-ssh-key-secret \
-  --from-file=gitSshKey=./airflow_gitsync_id_rsa \
-  --namespace airflow \
-  --dry-run=client -o yaml > airflow-git-ssh-key-secret.yaml
-  
-kubectl apply -f airflow-git-ssh-key-secret.yaml
-```
 
 
 # Сборка образа и push (выполнять из директории airflow)
