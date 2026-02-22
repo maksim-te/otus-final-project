@@ -11,6 +11,9 @@ kubectl create secret generic airflow-ssh-secret \
 kubectl apply -f airflow-ssh-secret.yaml
 ```
 
+Добавить публичный ключ в deploy keys!
+
+
 # Установка Airflow
 
 ```bash
