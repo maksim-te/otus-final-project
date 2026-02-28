@@ -1,25 +1,17 @@
 from datetime import datetime
 
-from airflow.hooks.base import BaseHook
+from airflow.sdk.bases.hook import BaseHook
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.hooks.kubernetes import KubernetesHook
 from airflow.sdk import DAG
-from airflow.operators.python import PythonOperator
-
-from airflow.sdk import Connection
-from airflow.settings import Session
-
-def get_connection(conn_id: str):
-    with Session() as session:
-        return session.query(Connection).filter(
-            Connection.conn_id == conn_id
-        ).one()
+from airflow.providers.standard.operators.python import PythonOperator
 
 from kubernetes import client
 import base64
 
 NAMESPACE = "spark"
 SECRET_NAME = "clickhouse-credentials"
+KUBERNETES_CONN_ID="kubernetes_default"
 
 def create_clickhouse_secret():
     conn = BaseHook.get_connection("clickhouse_default")
@@ -45,7 +37,7 @@ def create_clickhouse_secret():
         data=encoded_data,
     )
 
-    hook = KubernetesHook(conn_id="kubernetes_default")
+    hook = KubernetesHook(conn_id=KUBERNETES_CONN_ID)
 
     api_client = hook.get_conn()
     api = client.CoreV1Api(api_client)
@@ -67,7 +59,6 @@ with DAG(
     start_date=datetime(2026, 2, 18),
     schedule="0 3 * * *",
     catchup=False,
-    tags=["spark"],
 ) as dag:
 
     create_secret = PythonOperator(
@@ -79,7 +70,7 @@ with DAG(
         task_id="process_covid_data",
         namespace="spark",
         application_file="spark-apps/spark-covid-data-app.yaml",
-        kubernetes_conn_id="kubernetes_default",
+        kubernetes_conn_id=KUBERNETES_CONN_ID,
     )
 
     create_secret >> spark_submit
