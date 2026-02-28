@@ -8,6 +8,7 @@ spec:
   mode: cluster
   image: cr.yandex/crpeqnl53oh327o27qtu/spark/covid-processor:latest
   imagePullPolicy: Always
+  mainClass: Main
   mainApplicationFile: local:///opt/custom_jars/CovidProcessor-assembly-1.0.0.jar
   sparkVersion: 3.5.6
   driver:
@@ -16,9 +17,15 @@ spec:
     cores: 1
     memory: 1g
     serviceAccount: spark-operator-spark
+    envFrom:
+      - secretRef:
+          name: clickhouse-credentials
   executor:
     labels:
       version: 3.5.6
     instances: 1
-    cores: 1
-    memory: 1g
+    cores: 2
+    memory: 2g
+    envFrom:
+      - secretRef:
+          name: clickhouse-credentials
