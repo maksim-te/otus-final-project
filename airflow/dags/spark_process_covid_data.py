@@ -46,7 +46,9 @@ def create_clickhouse_secret():
     )
 
     hook = KubernetesHook(conn_id="kubernetes_default")
-    api = hook.get_conn()
+
+    api_client = hook.get_conn()
+    api = client.CoreV1Api(api_client)
 
     try:
         api.create_namespaced_secret(namespace=NAMESPACE, body=secret)
